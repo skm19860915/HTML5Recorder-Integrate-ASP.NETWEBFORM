@@ -13,14 +13,16 @@
         </div>
     </div>
     <br />
-    <div class="jumbotron" style="height:320px;">
+    <div class="jumbotron" style="height:360px;">
         <p style="color:white; font-size:15px; text-align:center;" id="formats">Click the button to start recording...</p>
+        <div style="text-align:center;"><span style="color:white;" id="minutes">00</span><span style="color:white;">:</span><span style="color:white;" id="seconds">00</span></div>
+        
         <div id="controls" style="text-align:center;">
             <button id="recordButton" class="btn btn-danger btn-xs" style="border-radius:50px; padding-top:5px;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
             </button>
             <button id="pauseButton" class="btn btn-danger btn-xs" disabled style="border-radius:50px; padding-top:5px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                <svg id="pause" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
             </button>
             <button id="stopButton" class="btn btn-danger btn-xs" disabled style="border-radius:50px; padding-top:5px;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
@@ -102,4 +104,55 @@
     </div>
     <script src="Scripts/myrecorder.js"></script>
   	<script src="Scripts/app.js"></script>
+    <script>
+        var Clock = {
+            totalSeconds: 0,
+
+            start: function () {
+                var self = this;
+                
+                this.interval = setInterval(function () {
+                    self.totalSeconds += 1;
+                    $("#minutes").text(pad(parseInt(self.totalSeconds / 60)));
+                    $("#seconds").text(pad(self.totalSeconds % 60));
+                }, 1000);
+            },
+
+            pause: function () {
+                clearInterval(this.interval);
+                delete this.interval;
+            },
+
+            resume: function () {
+                if (!this.interval) this.start();
+            }
+        };
+
+        function pad(val) {
+            var valString = val + "";
+            if (valString.length < 2) {
+                return "0" + valString;
+            } else {
+                return valString;
+            }
+        }
+
+        //Clock.start();
+        $('#recordButton').click(function () {
+            Clock.start();
+        });
+        $('#pauseButton').click(function () {
+            var status = $('#pauseButton').children('svg').attr('id');
+            if (status == "pause") {
+                Clock.resume();
+            }
+            else {
+                Clock.pause();
+            }
+            console.log(status);
+        });
+        $('#stopButton').click(function () {
+            Clock.totalSeconds = 0;
+        });
+    </script>
 </asp:Content>
